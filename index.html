@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Computer Science Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 90%;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .option {
+      margin: 10px 0;
+      padding: 12px;
+      background: #e7e7e7;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .option:hover {
+      background-color: #d4d4d4;
+    }
+
+    .option.correct {
+      background-color: #c8f7c5;
+    }
+
+    .option.incorrect {
+      background-color: #f8d7da;
+    }
+
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #result {
+      font-size: 1.2rem;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2 id="question">Loading...</h2>
+    <div id="options"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Next</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Which data structure uses FIFO (First In, First Out)?",
+        options: ["Stack", "Queue", "Tree", "Graph"],
+        answer: "Queue"
+      },
+      {
+        question: "Which language is primarily used for web development?",
+        options: ["C", "Python", "JavaScript", "Java"],
+        answer: "JavaScript"
+      },
+      {
+        question: "Which protocol is used to transfer web pages?",
+        options: ["FTP", "HTTP", "IP", "SMTP"],
+        answer: "HTTP"
+      },
+      {
+        question: "Which of the following is not an operating system?",
+        options: ["Linux", "Windows", "Oracle", "macOS"],
+        answer: "Oracle"
+      },
+      {
+        question: "What does 'DBMS' stand for?",
+        options: [
+          "Data Basic Management System",
+          "Database Management System",
+          "Data Backup Main Server",
+          "Digital Base Memory System"
+        ],
+        answer: "Database Management System"
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const resultEl = document.getElementById("result");
+
+    function loadQuestion() {
+      answered = false;
+      const q = quizData[currentIndex];
+      questionEl.textContent = q.question;
+      optionsEl.innerHTML = "";
+
+      q.options.forEach(option => {
+        const div = document.createElement("div");
+        div.classList.add("option");
+        div.textContent = option;
+        div.onclick = () => selectOption(div, q.answer);
+        optionsEl.appendChild(div);
+      });
+
+      nextBtn.style.display = "none";
+    }
+
+    function selectOption(selected, correct) {
+      if (answered) return;
+      answered = true;
+
+      const options = document.querySelectorAll(".option");
+      options.forEach(opt => {
+        opt.style.pointerEvents = "none";
+        if (opt.textContent === correct) {
+          opt.classList.add("correct");
+        } else if (opt === selected) {
+          opt.classList.add("incorrect");
+        }
+      });
+
+      if (selected.textContent === correct) {
+        score++;
+      }
+
+      nextBtn.style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      questionEl.style.display = "none";
+      optionsEl.style.display = "none";
+      nextBtn.style.display = "none";
+      resultEl.innerHTML = `
+        🎓 You scored <strong>${score}</strong> out of <strong>${quizData.length}</strong>.<br><br>
+        <button onclick="restartQuiz()">Play Again</button>
+      `;
+    }
+
+    function restartQuiz() {
+      currentIndex = 0;
+      score = 0;
+      questionEl.style.display = "block";
+      optionsEl.style.display = "block";
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
